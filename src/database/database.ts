@@ -62,7 +62,7 @@ export async function getAllDB(table: string): Promise<any> {
         db.all(`SELECT * FROM ${table}`, (err, rows) => {
           if (err) {
             reportError({
-              message: "Error in _getAllDB():" + getErrorMessage(err),
+              message: "Error in getAllDB():" + getErrorMessage(err),
             });
             reject(err);
           } else if (rows) {
@@ -81,30 +81,40 @@ export async function getAllDB(table: string): Promise<any> {
 export async function initDB(): Promise<string> {
   return _execOperationDB(async (db: sqlite3.Database) => {
     const initQueries: Array<string> = [
-      `CREATE TABLE IF NOT EXISTS assignments (
+      `CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
-        type TEXT NOT NULL,
-        title TEXT NOT NULL,
-        tags TEXT,
-        module INTEGER,
-        position TEXT NOT NULL,
+        name TEXT,
         level INTEGER,
-        isExpanding INTEGER NOT NULL,
-        path TEXT NOT NULL);`,
-      `CREATE TABLE IF NOT EXISTS modules (
+        creationDate TEXT,
+        nationality TEXT
+    );`,
+      `CREATE TABLE IF NOT EXISTS inventories (
         id INTEGER PRIMARY KEY,
+        user_id TEXT,
+        slot1 TEXT,
+        slot2 TEXT,
+        slot3 TEXT,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+          ON DELETE CASCADE ON UPDATE NO ACTION
+    );`,
+      `CREATE TABLE IF NOT EXISTS skills (
+        name TEXT PRIMARY KEY,
+        user_id TEXT,
+        skill1 TEXT,
+        skill2 TEXT,
+        skill3 TEXT,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+          ON DELETE CASCADE ON UPDATE NO ACTION
+    );`,
+      `CREATE TABLE IF NOT EXISTS achievements (
+        id TEXT PRIMARY KEY,
+        user_id TEXT,
         name TEXT NOT NULL,
-        tags TEXT,
-        assignments INTEGER,
-        subjects TEXT,
-        letters TEXT,
-        instructions TEXT);`,
-      `CREATE TABLE IF NOT EXISTS tags (
-        name TEXT PRIMARY KEY,
-        assignments TEXT NOT NULL);`,
-      `CREATE TABLE IF NOT EXISTS moduleTags (
-        name TEXT PRIMARY KEY,
-        modules TEXT NOT NULL);`,
+        experience INTEGER,
+        dateCompleted TEXT,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+          ON DELETE CASCADE ON UPDATE NO ACTION
+    );`,
     ];
     try {
       await Promise.all(
@@ -126,6 +136,85 @@ export async function initDB(): Promise<string> {
     } catch (err) {
       reportError({
         message: "Error in initDB():" + getErrorMessage(err),
+      });
+      throw err;
+    }
+  });
+}
+
+/**
+ * Add a row of data to a table.
+ * @param columnNames Names of the table columns
+ * @param columns The data for each column
+ * @param table The table name
+ * @returns
+ */
+export async function addRowsDB(
+  columnNames: string[],
+  rows: Array<Array<unknown>>,
+  table: string
+): Promise<string> {
+  return _execOperationDB(async (db: sqlite3.Database) => {
+    try {
+      const columnNamesJoined = columnNames.join(",");
+      // generate a string of question marks separated by commas
+      // for the query
+      const placeholders = columnNames.map(() => "?").join(",");
+
+      const result = await new Promise((resolve, reject) => {
+        db.serialize(() => {
+          db.run("BEGIN TRANSACTION");
+
+          rows.forEach((row) => {
+            db.run(
+              `INSERT INTO ${table}(${columnNamesJoined}) VALUES(${placeholders})`,
+              row,
+              (err) => {
+                if (err) {
+                  db.run("ROLLBACK");
+                  reject(err);
+                }
+              }
+            );
+          });
+
+          // Commit the transaction if all inserts succeed
+          db.run("COMMIT", (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve("Rows inserted successfully");
+            }
+          });
+        });
+      });
+      return result;
+    } catch (err) {
+      reportError({
+        message: "Error in addRowsDB():" + getErrorMessage(err),
+      });
+      throw err;
+    }
+  });
+}
+
+export async function dropTableDB(tableName: string) {
+  return _execOperationDB(async (db: sqlite3.Database) => {
+    try {
+      const result = await new Promise((resolve, reject) => {
+        db.serialize(() => {
+          db.run(`DROP TABLE IF EXISTS ${tableName}`, (err) => {
+            if (err) {
+              reject(err);
+            }
+          });
+        });
+        resolve("Tables dropped successfully");
+      });
+      return result;
+    } catch (err) {
+      reportError({
+        message: "Error in dropTablesDB():" + getErrorMessage(err),
       });
       throw err;
     }

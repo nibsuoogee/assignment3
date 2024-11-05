@@ -1,5 +1,4 @@
-// src/contexts/SnackbarContext.tsx
-"use client"; // <-- Add this line at the top
+"use client";
 
 import { Snackbar } from "@mui/joy";
 import { createContext, useContext, useState, ReactNode } from "react";

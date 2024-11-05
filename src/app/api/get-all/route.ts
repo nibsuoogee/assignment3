@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getErrorMessage } from "../../../utility/errorUtils";
+import { getErrorMessage, reportError } from "../../../utility/errorUtils";
 import { getAllDB } from "../../../database/database";
 
 export async function POST(request: NextRequest) {
