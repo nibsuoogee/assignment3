@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
     // Get the table name from the query parameters
     const { searchParams } = new URL(request.url);
     const tableName = searchParams.get("tableName");
+    const databaseName = searchParams.get("databaseName");
 
     if (!tableName) {
       return NextResponse.json(
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Now you can use the tableName variable
-    const data = await getAllDB(tableName);
+    const data = await getAllDB(tableName, databaseName as string);
 
     return NextResponse.json({ message: "Data retrieved successfully", data });
   } catch (err) {

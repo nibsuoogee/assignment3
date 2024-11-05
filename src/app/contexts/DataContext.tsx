@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
 type DataContextType = {
-  setDataRows: (rows: string[]) => void;
+  setDataRows: (rows: Array<Record<string, any>>) => void;
   dataRows: Array<Record<string, any>>;
 };
 
@@ -20,7 +20,7 @@ export const useDataContext = () => {
 export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [dataRows, setRows] = useState<Array<Record<string, any>>>([]);
 
-  const setDataRows = (rows: string[]) => {
+  const setDataRows = (rows: Array<Record<string, any>>) => {
     setRows(rows);
   };
 

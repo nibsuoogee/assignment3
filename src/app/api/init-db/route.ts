@@ -1,10 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { initDB } from "../../../database/database";
 import { getErrorMessage } from "../../../utility/errorUtils";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
-    await initDB();
+    const { searchParams } = new URL(request.url);
+    const databaseName = searchParams.get("databaseName");
+
+    await initDB(databaseName as string);
     return NextResponse.json({ message: "Database initialized successfully" });
   } catch (err) {
     reportError({

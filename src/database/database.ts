@@ -3,8 +3,9 @@ import path from "path";
 import { getErrorMessage, reportError } from "../utility/errorUtils";
 
 // Database connection
-function _openDB(): Promise<sqlite3.Database> {
-  const dbPath = path.join("database", "database.db");
+function _openDB(databaseName: string): Promise<sqlite3.Database> {
+  const databaseFile = databaseName + ".db";
+  const dbPath = path.join("database", databaseFile);
   return new Promise((resolve, reject) => {
     const db = new sqlite3.Database(dbPath, (err) => {
       if (err) {
@@ -36,10 +37,11 @@ async function _closeDB(db: sqlite3.Database): Promise<string> {
  * the supplied function, and finally closes the db.
  */
 async function _execOperationDB(
-  operation: (db: sqlite3.Database) => Promise<any>
+  operation: (db: sqlite3.Database) => Promise<any>,
+  databaseName: string
 ): Promise<any> {
   try {
-    const db = await _openDB();
+    const db = await _openDB(databaseName);
     const result = await operation(db);
     await _closeDB(db);
 
@@ -55,10 +57,14 @@ async function _execOperationDB(
 /**
  * Performs 'select * from' for the supplied table, returning the content.
  */
-export async function getAllDB(table: string): Promise<any> {
+export async function getAllDB(
+  table: string,
+  databaseName: string
+): Promise<any> {
   return _execOperationDB((db: sqlite3.Database) => {
     return new Promise((resolve, reject) => {
       db.serialize(() => {
+        console.log("`SELECT * FROM ${table}`: ", `SELECT * FROM ${table}`);
         db.all(`SELECT * FROM ${table}`, (err, rows) => {
           if (err) {
             reportError({
@@ -74,11 +80,11 @@ export async function getAllDB(table: string): Promise<any> {
         });
       });
     });
-  });
+  }, databaseName);
 }
 
 // Database initialization
-export async function initDB(): Promise<string> {
+export async function initDB(databaseName: string): Promise<string> {
   return _execOperationDB(async (db: sqlite3.Database) => {
     const initQueries: Array<string> = [
       `CREATE TABLE IF NOT EXISTS users (
@@ -139,7 +145,7 @@ export async function initDB(): Promise<string> {
       });
       throw err;
     }
-  });
+  }, databaseName);
 }
 
 /**
@@ -152,7 +158,8 @@ export async function initDB(): Promise<string> {
 export async function addRowsDB(
   columnNames: string[],
   rows: Array<Array<unknown>>,
-  table: string
+  table: string,
+  databaseName: string
 ): Promise<string> {
   return _execOperationDB(async (db: sqlite3.Database) => {
     try {
@@ -195,10 +202,10 @@ export async function addRowsDB(
       });
       throw err;
     }
-  });
+  }, databaseName);
 }
 
-export async function dropTableDB(tableName: string) {
+export async function dropTableDB(tableName: string, databaseName: string) {
   return _execOperationDB(async (db: sqlite3.Database) => {
     try {
       const result = await new Promise((resolve, reject) => {
@@ -218,5 +225,5 @@ export async function dropTableDB(tableName: string) {
       });
       throw err;
     }
-  });
+  }, databaseName);
 }

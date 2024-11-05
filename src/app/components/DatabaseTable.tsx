@@ -1,3 +1,4 @@
+import { Sheet, Table } from "@mui/joy";
 import React from "react";
 
 interface TableProps {
@@ -9,28 +10,30 @@ const DatabaseTable: React.FC<TableProps> = ({ data }) => {
   const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
   return (
-    <table aria-label="basic table">
-      <thead>
-        <tr>
-          {headers.map((header) => (
-            <th key={header} style={{ padding: "8px", textAlign: "left" }}>
-              {header}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((row, rowIndex) => (
-          <tr key={rowIndex}>
+    <Sheet sx={{ height: 300, overflow: "auto" }}>
+      <Table aria-label="basic table">
+        <thead>
+          <tr>
             {headers.map((header) => (
-              <td key={header} style={{ padding: "8px", textAlign: "left" }}>
-                {row[header]}
-              </td>
+              <th key={header} style={{ padding: "8px", textAlign: "left" }}>
+                {header}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {data.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {headers.map((header) => (
+                <td key={header} style={{ padding: "8px", textAlign: "left" }}>
+                  {row[header]}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </Sheet>
   );
 };
 

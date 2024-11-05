@@ -6,21 +6,33 @@ import { addRowsDB } from "../../../database/database";
 
 export async function POST() {
   try {
-    const sampleData: { [key: string]: TableData<string> } = sampleDataOriginal;
-    const tableNames = Object.keys(sampleData);
+    const sampleData: { [key: string]: { [key: string]: TableData<string> } } =
+      sampleDataOriginal;
+    const databaseNames = Object.keys(sampleData);
+
     await Promise.all(
-      tableNames.map(async (name) => {
-        const tableData: TableData<string> = sampleData[name];
-        await addRowsDB(tableData.columnNames, tableData.rows, name);
+      databaseNames.map(async (databaseName) => {
+        const databaseTables = sampleData[databaseName];
+        const tableNames = Object.keys(databaseTables);
+
+        tableNames.map(async (tableName) => {
+          const tableData: TableData<string> = databaseTables[tableName];
+          await addRowsDB(
+            tableData.columnNames,
+            tableData.rows,
+            tableName,
+            databaseName
+          );
+        });
       })
     );
-    return NextResponse.json({ message: "Database populated successfully" });
+    return NextResponse.json({ message: "Databases populated successfully" });
   } catch (err) {
     reportError({
-      message: "Error initializing database:" + getErrorMessage(err),
+      message: "Error populating databases:" + getErrorMessage(err),
     });
     return NextResponse.json(
-      { message: "Error initializing database" },
+      { message: "Error populating databases" },
       { status: 500 }
     );
   }
