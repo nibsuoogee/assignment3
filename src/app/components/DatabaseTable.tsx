@@ -1,13 +1,15 @@
 import { Sheet, Table } from "@mui/joy";
 import React from "react";
+import { DataWindowType } from "../../types";
 
 interface TableProps {
-  data: Array<Record<string, any>>;
+  dataWindow: DataWindowType;
 }
 
-const DatabaseTable: React.FC<TableProps> = ({ data }) => {
+const DatabaseTable: React.FC<TableProps> = ({ dataWindow }) => {
+  const rows = dataWindow.rows;
   // Get the keys from the first object in the array to use as the header
-  const headers = data.length > 0 ? Object.keys(data[0]) : [];
+  const headers = rows.length > 0 ? Object.keys(rows[0]) : [];
 
   return (
     <Sheet sx={{ height: 300, overflow: "auto" }}>
@@ -22,7 +24,7 @@ const DatabaseTable: React.FC<TableProps> = ({ data }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((row, rowIndex) => (
+          {rows.map((row, rowIndex) => (
             <tr key={rowIndex}>
               {headers.map((header) => (
                 <td key={header} style={{ padding: "8px", textAlign: "left" }}>

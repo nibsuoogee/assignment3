@@ -11,7 +11,13 @@ export async function POST() {
     const databaseNames = Object.keys(sampleData);
 
     await Promise.all(
-      databaseNames.map(async (databaseName) => {
+      databaseNames.map(async (databaseName, index) => {
+        // The most naive replication strategy known to man.
+        // Perform row additions to one database and the next
+        // one, looping at the last database.
+        const backUpDatabaseName =
+          databaseNames[(index + 1) % databaseNames.length];
+
         const databaseTables = sampleData[databaseName];
         const tableNames = Object.keys(databaseTables);
 
@@ -22,6 +28,15 @@ export async function POST() {
             tableData.rows,
             tableName,
             databaseName
+          );
+        });
+        tableNames.map(async (tableName) => {
+          const tableData: TableData<string> = databaseTables[tableName];
+          await addRowsDB(
+            tableData.columnNames,
+            tableData.rows,
+            tableName,
+            backUpDatabaseName
           );
         });
       })

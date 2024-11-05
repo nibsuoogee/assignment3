@@ -104,8 +104,8 @@ export async function initDB(databaseName: string): Promise<string> {
           ON DELETE CASCADE ON UPDATE NO ACTION
     );`,
       `CREATE TABLE IF NOT EXISTS skills (
-        name TEXT PRIMARY KEY,
-        user_id TEXT,
+        name TEXT,
+        user_id TEXT PRIMARY KEY,
         skill1 TEXT,
         skill2 TEXT,
         skill3 TEXT,
@@ -170,28 +170,16 @@ export async function addRowsDB(
 
       const result = await new Promise((resolve, reject) => {
         db.serialize(() => {
-          db.run("BEGIN TRANSACTION");
-
           rows.forEach((row) => {
             db.run(
               `INSERT INTO ${table}(${columnNamesJoined}) VALUES(${placeholders})`,
               row,
               (err) => {
                 if (err) {
-                  db.run("ROLLBACK");
                   reject(err);
                 }
               }
             );
-          });
-
-          // Commit the transaction if all inserts succeed
-          db.run("COMMIT", (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve("Rows inserted successfully");
-            }
           });
         });
       });
@@ -210,7 +198,7 @@ export async function dropTableDB(tableName: string, databaseName: string) {
     try {
       const result = await new Promise((resolve, reject) => {
         db.serialize(() => {
-          db.run(`DROP TABLE IF EXISTS ${tableName}`, (err) => {
+          db.run(`DELETE FROM ${tableName}`, (err) => {
             if (err) {
               reject(err);
             }

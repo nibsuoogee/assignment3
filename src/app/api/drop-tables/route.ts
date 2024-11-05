@@ -6,11 +6,21 @@ import { dropTableDB } from "../../../database/database";
 
 export async function POST() {
   try {
-    const sampleData: { [key: string]: TableData<string> } = sampleDataOriginal;
-    const tableNames = Object.keys(sampleData);
+    const sampleData: { [key: string]: { [key: string]: TableData<string> } } =
+      sampleDataOriginal;
+
+    const databaseNames = Object.keys(sampleData);
+
     await Promise.all(
-      tableNames.map(async (name) => {
-        await dropTableDB(name);
+      databaseNames.map(async (databaseName) => {
+        const databaseTables = sampleData[databaseName];
+        const tableNames = Object.keys(databaseTables);
+
+        await Promise.all(
+          tableNames.map(async (name) => {
+            await dropTableDB(name, databaseName);
+          })
+        );
       })
     );
     return NextResponse.json({ message: "Tables dropped successfully" });
