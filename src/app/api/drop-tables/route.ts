@@ -23,7 +23,7 @@ export async function POST() {
         );
       })
     );
-    return NextResponse.json({ message: "Tables dropped successfully" });
+    return NextResponse.json({ message: "Tables cleared successfully" });
   } catch (err) {
     reportError({
       message: "Error dropping tables:" + getErrorMessage(err),

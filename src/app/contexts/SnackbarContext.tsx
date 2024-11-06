@@ -24,6 +24,8 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
     open: false,
     message: "",
   });
+  const vertical = "bottom";
+  const horizontal = "center";
 
   const showSnackbar = (message: string) => {
     setSnackbar({ open: true, message });
@@ -41,6 +43,7 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
         open={snackbar.open}
         onClose={handleClose}
         autoHideDuration={3000}
+        anchorOrigin={{ vertical, horizontal }}
       >
         {snackbar.message}
       </Snackbar>

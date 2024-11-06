@@ -204,7 +204,7 @@ export async function dropTableDB(tableName: string, databaseName: string) {
             }
           });
         });
-        resolve("Tables dropped successfully");
+        resolve("Tables cleared successfully");
       });
       return result;
     } catch (err) {

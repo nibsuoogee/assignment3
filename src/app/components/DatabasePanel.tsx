@@ -6,7 +6,6 @@ import Typography from "@mui/joy/Typography";
 import Stack from "@mui/joy/Stack";
 import { Card } from "@mui/joy";
 import { useSnackbar } from "../contexts/SnackbarContext";
-import { useState } from "react";
 import { getErrorMessage } from "../../utility/errorUtils";
 import { useDataContext } from "../contexts/DataContext";
 import { DataWindowType } from "../../types";
@@ -16,7 +15,6 @@ const databases = ["europe", "north-america", "asia"];
 export default function DatabasePanel() {
   const { showSnackbar } = useSnackbar();
   const { setDataRows } = useDataContext();
-  const [message, setMessage] = useState("");
 
   const handleInitDB = async () => {
     try {
@@ -34,11 +32,10 @@ export default function DatabasePanel() {
         });
         resolve("Databases initialized successfully");
       });
-      setMessage(result as string);
+      showSnackbar(result as string);
     } catch (err) {
-      setMessage("Error initializing databases:" + getErrorMessage(err));
+      showSnackbar("Error initializing databases:" + getErrorMessage(err));
     }
-    showSnackbar(message);
   };
 
   const handleGetAllRows = async (tableName: string, databaseName: string) => {
@@ -58,31 +55,31 @@ export default function DatabasePanel() {
         };
         setDataRows(dataWindow);
       } else {
-        setMessage("Failed to get data");
-        showSnackbar(message);
+        showSnackbar("Failed to get data");
       }
     } catch (err) {
-      setMessage("Error getting data():" + getErrorMessage(err));
-      showSnackbar(message);
+      showSnackbar("Error getting data():" + getErrorMessage(err));
     }
   };
 
-  const handlePopulate = async () => {
+  const handlePopulate = async (useReplication: string) => {
     try {
-      const response = await fetch(`/api/populate-db`, {
-        method: "POST",
-      });
+      const response = await fetch(
+        `/api/populate-db?useReplication=${useReplication}`,
+        {
+          method: "POST",
+        }
+      );
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message);
+        showSnackbar(data.message);
       } else {
-        setMessage("Failed to populate database");
+        showSnackbar("Failed to populate database");
       }
     } catch (err) {
-      setMessage("Error populating database:" + getErrorMessage(err));
+      showSnackbar("Error populating database:" + getErrorMessage(err));
     }
-    showSnackbar(message);
   };
 
   const handleDropTables = async () => {
@@ -93,14 +90,13 @@ export default function DatabasePanel() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message);
+        showSnackbar(data.message);
       } else {
-        setMessage("Failed to drop tables");
+        showSnackbar("Failed to drop tables");
       }
     } catch (err) {
-      setMessage("Error dropping tables:" + getErrorMessage(err));
+      showSnackbar("Error dropping tables:" + getErrorMessage(err));
     }
-    showSnackbar(message);
   };
 
   return (
@@ -130,7 +126,7 @@ export default function DatabasePanel() {
             Initialize databases
           </Button>
           <Button
-            onClick={handlePopulate}
+            onClick={() => handlePopulate("false")}
             size="md"
             variant={"outlined"}
             color="neutral"
@@ -138,12 +134,20 @@ export default function DatabasePanel() {
             Populate all
           </Button>
           <Button
+            onClick={() => handlePopulate("true")}
+            size="md"
+            variant={"outlined"}
+            color="neutral"
+          >
+            Populate replicated
+          </Button>
+          <Button
             onClick={handleDropTables}
             size="md"
             variant={"outlined"}
             color="neutral"
           >
-            Drop all tables
+            Clear all tables
           </Button>
         </Box>
 

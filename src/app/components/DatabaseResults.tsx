@@ -4,7 +4,7 @@ import { useDataContext } from "../contexts/DataContext";
 import Typography from "@mui/joy/Typography";
 import DatabaseTable from "./DatabaseTable";
 import Grid from "@mui/joy/Grid";
-import { Button, Card, Stack } from "@mui/joy";
+import { Button, Card, Stack, Table } from "@mui/joy";
 
 export default function DatabaseResults() {
   const { dataRows, clearDataRows } = useDataContext();
@@ -27,6 +27,8 @@ export default function DatabaseResults() {
       >
         Clear results
       </Button>
+
+      <Table aria-label="css formatting table"></Table>
 
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         {dataRows

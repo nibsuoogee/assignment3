@@ -1,11 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getErrorMessage, reportError } from "../../../utility/errorUtils";
 import sampleDataOriginal from "../../../database/sampleData.json";
 import { TableData } from "../../../types";
 import { addRowsDB } from "../../../database/database";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const useReplicationParameter = searchParams.get("useReplication");
+    const useReplication = useReplicationParameter === "true" ? true : false;
+
     const sampleData: { [key: string]: { [key: string]: TableData<string> } } =
       sampleDataOriginal;
     const databaseNames = Object.keys(sampleData);
@@ -30,15 +34,17 @@ export async function POST() {
             databaseName
           );
         });
-        tableNames.map(async (tableName) => {
-          const tableData: TableData<string> = databaseTables[tableName];
-          await addRowsDB(
-            tableData.columnNames,
-            tableData.rows,
-            tableName,
-            backUpDatabaseName
-          );
-        });
+        if (useReplication) {
+          tableNames.map(async (tableName) => {
+            const tableData: TableData<string> = databaseTables[tableName];
+            await addRowsDB(
+              tableData.columnNames,
+              tableData.rows,
+              tableName,
+              backUpDatabaseName
+            );
+          });
+        }
       })
     );
     return NextResponse.json({ message: "Databases populated successfully" });
