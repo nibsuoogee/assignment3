@@ -3,6 +3,13 @@ import { getErrorMessage, reportError } from "../../../utility/errorUtils";
 import sampleDataOriginal from "../../../database/sampleData.json";
 import { TableData } from "../../../types";
 import { addRowsDB } from "../../../database/database";
+import { addDataToModel } from "../../../database/databaseMongo";
+import {
+  createAchievementObjects,
+  createInventoryObjects,
+  createSkillObjects,
+  createUserObjects,
+} from "../../../database/dataConversion";
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,12 +34,30 @@ export async function POST(request: NextRequest) {
 
         tableNames.map(async (tableName) => {
           const tableData: TableData<string> = databaseTables[tableName];
-          await addRowsDB(
-            tableData.columnNames,
-            tableData.rows,
-            tableName,
-            databaseName
-          );
+          const rows = tableData.rows;
+          await addRowsDB(tableData.columnNames, rows, tableName, databaseName);
+
+          let objects: any[] = [];
+          switch (tableName) {
+            case "users":
+              objects = createUserObjects(rows as any);
+              await addDataToModel("userModel", objects);
+              break;
+            case "inventories":
+              objects = createInventoryObjects(rows as any);
+              await addDataToModel("inventoryModel", objects);
+              break;
+            case "skills":
+              objects = createSkillObjects(rows as any);
+              await addDataToModel("skillModel", objects);
+              break;
+            case "achievements":
+              objects = createAchievementObjects(rows as any);
+              await addDataToModel("achievementModel", objects);
+              break;
+            default:
+              break;
+          }
         });
         if (useReplication) {
           tableNames.map(async (tableName) => {
@@ -47,6 +72,7 @@ export async function POST(request: NextRequest) {
         }
       })
     );
+
     return NextResponse.json({ message: "Databases populated successfully" });
   } catch (err) {
     reportError({

@@ -1,20 +1,19 @@
 "use client";
 
-import { Button } from "@mui/joy";
+import { Button, Switch } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import Stack from "@mui/joy/Stack";
-import { Card } from "@mui/joy";
 import { useSnackbar } from "../contexts/SnackbarContext";
 import { getErrorMessage } from "../../utility/errorUtils";
+import DatabaseGetterWindow from "./DatabaseGetterWindow";
 import { useDataContext } from "../contexts/DataContext";
-import { DataWindowType } from "../../types";
 
 const databases = ["europe", "north-america", "asia"];
 
 export default function DatabasePanel() {
   const { showSnackbar } = useSnackbar();
-  const { setDataRows } = useDataContext();
+  const { assignmentChecked, setAssignmentChecked } = useDataContext();
 
   const handleInitDB = async () => {
     try {
@@ -35,30 +34,6 @@ export default function DatabasePanel() {
       showSnackbar(result as string);
     } catch (err) {
       showSnackbar("Error initializing databases:" + getErrorMessage(err));
-    }
-  };
-
-  const handleGetAllRows = async (tableName: string, databaseName: string) => {
-    try {
-      const response = await fetch(
-        `/api/get-all?tableName=${tableName}&databaseName=${databaseName}`,
-        {
-          method: "POST",
-        }
-      );
-      const data = await response.json();
-
-      if (response.ok) {
-        const dataWindow: DataWindowType = {
-          title: databaseName + " " + tableName,
-          rows: data.data,
-        };
-        setDataRows(dataWindow);
-      } else {
-        showSnackbar("Failed to get data");
-      }
-    } catch (err) {
-      showSnackbar("Error getting data():" + getErrorMessage(err));
     }
   };
 
@@ -108,6 +83,23 @@ export default function DatabasePanel() {
           alignItems: "flex-start",
         }}
       >
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+          }}
+        >
+          <Typography level="body-md">Assignment 3</Typography>
+
+          <Switch
+            checked={assignmentChecked}
+            onChange={(event) => setAssignmentChecked(event.target.checked)}
+          />
+          <Typography level="body-md">Assignment 4</Typography>
+        </Stack>
+
         <Typography level="h1">Actions</Typography>
 
         <Box
@@ -160,121 +152,30 @@ export default function DatabasePanel() {
               gap: 1,
             }}
           >
-            <Card variant="outlined">
-              <Typography level="title-lg">Europe</Typography>
-              <Stack spacing={1}>
-                <Button
-                  onClick={() => handleGetAllRows("users", "europe")}
-                  size="md"
-                  variant={"outlined"}
-                  color="neutral"
-                >
-                  users
-                </Button>
-                <Button
-                  onClick={() => handleGetAllRows("inventories", "europe")}
-                  size="md"
-                  variant={"outlined"}
-                  color="neutral"
-                >
-                  inventories
-                </Button>
-                <Button
-                  onClick={() => handleGetAllRows("skills", "europe")}
-                  size="md"
-                  variant={"outlined"}
-                  color="neutral"
-                >
-                  skills
-                </Button>
-                <Button
-                  onClick={() => handleGetAllRows("achievements", "europe")}
-                  size="md"
-                  variant={"outlined"}
-                  color="neutral"
-                >
-                  achievements
-                </Button>
-              </Stack>
-            </Card>
-            <Card variant="outlined">
-              <Typography level="title-lg"> North America</Typography>
-              <Stack spacing={1}>
-                <Button
-                  onClick={() => handleGetAllRows("users", "north-america")}
-                  size="md"
-                  variant={"outlined"}
-                  color="neutral"
-                >
-                  users
-                </Button>
-                <Button
-                  onClick={() =>
-                    handleGetAllRows("inventories", "north-america")
-                  }
-                  size="md"
-                  variant={"outlined"}
-                  color="neutral"
-                >
-                  inventories
-                </Button>
-                <Button
-                  onClick={() => handleGetAllRows("skills", "north-america")}
-                  size="md"
-                  variant={"outlined"}
-                  color="neutral"
-                >
-                  skills
-                </Button>
-                <Button
-                  onClick={() =>
-                    handleGetAllRows("achievements", "north-america")
-                  }
-                  size="md"
-                  variant={"outlined"}
-                  color="neutral"
-                >
-                  achievements
-                </Button>
-              </Stack>
-            </Card>
-            <Card variant="outlined">
-              <Typography level="title-lg">Asia</Typography>
-              <Stack spacing={1}>
-                <Button
-                  onClick={() => handleGetAllRows("users", "asia")}
-                  size="md"
-                  variant={"outlined"}
-                  color="neutral"
-                >
-                  users
-                </Button>
-                <Button
-                  onClick={() => handleGetAllRows("inventories", "asia")}
-                  size="md"
-                  variant={"outlined"}
-                  color="neutral"
-                >
-                  inventories
-                </Button>
-                <Button
-                  onClick={() => handleGetAllRows("skills", "asia")}
-                  size="md"
-                  variant={"outlined"}
-                  color="neutral"
-                >
-                  skills
-                </Button>
-                <Button
-                  onClick={() => handleGetAllRows("achievements", "asia")}
-                  size="md"
-                  variant={"outlined"}
-                  color="neutral"
-                >
-                  achievements
-                </Button>
-              </Stack>
-            </Card>
+            {assignmentChecked ? (
+              <>
+                <DatabaseGetterWindow
+                  databaseName="sqlite"
+                  variant="soft"
+                  color="primary"
+                />
+                <DatabaseGetterWindow
+                  databaseName="mongo"
+                  variant="soft"
+                  color="success"
+                />
+              </>
+            ) : (
+              <>
+                {databases.map((databaseName) => (
+                  <DatabaseGetterWindow
+                    key={databaseName}
+                    databaseName={databaseName}
+                    variant="outlined"
+                  />
+                ))}
+              </>
+            )}
           </Box>
         </Box>
       </Stack>
