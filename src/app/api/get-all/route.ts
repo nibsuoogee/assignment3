@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getErrorMessage, reportError } from "../../../utility/errorUtils";
 import { getAllDB } from "../../../database/database";
 import { findAllDocuments } from "../../../database/databaseMongo";
-
-async function getAllMongo() {}
+import { ModelsDictionary } from "../../../types";
+import { createUserArrays } from "../../../database/dataConversion";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,14 +19,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Now you can use the tableName variable
     let data: any = null;
     switch (databaseName) {
       case "mongo":
-        const mongoResult = await findAllDocuments("userModel");
-        console.log("mongoResult: ", mongoResult);
+        let mongoResult = [];
+        const modelMappings: { [key: string]: keyof ModelsDictionary } = {
+          users: "userModel",
+          inventories: "inventoryModel",
+          skills: "skillModel",
+          achievements: "achievementModel",
+        };
+        if (tableName in modelMappings) {
+          mongoResult = await findAllDocuments(
+            modelMappings[tableName as keyof typeof modelMappings]
+          );
+          data = createUserArrays(mongoResult);
+          console.log(data);
+        } else {
+          throw new Error(`Invalid table name: ${tableName}`);
+        }
         break;
       default:
+        console.log(data);
         data = await getAllDB(tableName, databaseName as string);
         break;
     }

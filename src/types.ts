@@ -1,8 +1,4 @@
 import { Model } from "mongoose";
-import { UserDocument } from "./database/models/userModel";
-import { InventoryDocument } from "./database/models/inventoryModel";
-import { SkillDocument } from "./database/models/skillModel";
-import { AchievementDocument } from "./database/models/achievementModel";
 
 export type TableData<T> = {
   columnNames: Array<any>;

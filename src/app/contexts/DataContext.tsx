@@ -23,7 +23,7 @@ export const useDataContext = () => {
 
 export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [dataRows, setRows] = useState<Array<DataWindowType>>([]);
-  const [assignmentChecked, setChecked] = useState<boolean>(false);
+  const [assignmentChecked, setChecked] = useState<boolean>(true);
   const setAssignmentChecked = (checked: boolean) => {
     setChecked(checked);
   };

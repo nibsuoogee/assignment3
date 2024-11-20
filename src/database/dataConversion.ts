@@ -10,6 +10,24 @@ export const createUserObjects = (
   }));
 };
 
+export const createUserArrays = (
+  users: {
+    id: string;
+    name: string;
+    level: number;
+    creationDate: Date;
+    nationality: string;
+  }[]
+) => {
+  return users.map((user) => [
+    user.id,
+    user.name,
+    user.level,
+    user.creationDate.toISOString(),
+    user.nationality,
+  ]);
+};
+
 export const createInventoryObjects = (
   inventoryData: [number, string, string, string, string][]
 ) => {
@@ -20,6 +38,24 @@ export const createInventoryObjects = (
     slot2: row[3],
     slot3: row[4],
   }));
+};
+
+export const createInventoryArrays = (
+  inventories: {
+    id: number;
+    userId: string;
+    slot1: string;
+    slot2: string;
+    slot3: string;
+  }[]
+) => {
+  return inventories.map((inventory) => [
+    inventory.id,
+    inventory.userId,
+    inventory.slot1,
+    inventory.slot2,
+    inventory.slot3,
+  ]);
 };
 
 export const createSkillObjects = (
@@ -34,6 +70,24 @@ export const createSkillObjects = (
   }));
 };
 
+export const createSkillArrays = (
+  skills: {
+    name: string;
+    userId: string;
+    skill1: string;
+    skill2: string;
+    skill3: string;
+  }[]
+) => {
+  return skills.map((skill) => [
+    skill.name,
+    skill.userId,
+    skill.skill1,
+    skill.skill2,
+    skill.skill3,
+  ]);
+};
+
 export const createAchievementObjects = (
   achievementData: [string, string, string, number, string][]
 ) => {
@@ -44,4 +98,22 @@ export const createAchievementObjects = (
     experience: row[3],
     dateCompleted: new Date(row[4]),
   }));
+};
+
+export const createAchievementArrays = (
+  achievements: {
+    id: string;
+    userId: string;
+    name: string;
+    experience: number;
+    dateCompleted: Date;
+  }[]
+) => {
+  return achievements.map((achievement) => [
+    achievement.id,
+    achievement.userId,
+    achievement.name,
+    achievement.experience,
+    achievement.dateCompleted.toISOString(),
+  ]);
 };

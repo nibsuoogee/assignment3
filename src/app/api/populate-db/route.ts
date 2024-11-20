@@ -36,6 +36,21 @@ export async function POST(request: NextRequest) {
           const tableData: TableData<string> = databaseTables[tableName];
           const rows = tableData.rows;
           await addRowsDB(tableData.columnNames, rows, tableName, databaseName);
+        });
+        if (useReplication) {
+          tableNames.map(async (tableName) => {
+            const tableData: TableData<string> = databaseTables[tableName];
+            await addRowsDB(
+              tableData.columnNames,
+              tableData.rows,
+              tableName,
+              backUpDatabaseName
+            );
+          });
+        }
+        tableNames.map(async (tableName) => {
+          const tableData: TableData<string> = databaseTables[tableName];
+          const rows = tableData.rows;
 
           let objects: any[] = [];
           switch (tableName) {
@@ -59,17 +74,6 @@ export async function POST(request: NextRequest) {
               break;
           }
         });
-        if (useReplication) {
-          tableNames.map(async (tableName) => {
-            const tableData: TableData<string> = databaseTables[tableName];
-            await addRowsDB(
-              tableData.columnNames,
-              tableData.rows,
-              tableName,
-              backUpDatabaseName
-            );
-          });
-        }
       })
     );
 
