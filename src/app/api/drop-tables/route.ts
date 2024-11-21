@@ -3,6 +3,10 @@ import { getErrorMessage, reportError } from "../../../utility/errorUtils";
 import sampleDataOriginal from "../../../database/sampleData.json";
 import { TableData } from "../../../types";
 import { dropTableDB } from "../../../database/database";
+import {
+  deleteAllDocuments,
+  modelMappings,
+} from "../../../database/databaseMongo";
 
 export async function POST() {
   try {
@@ -23,6 +27,9 @@ export async function POST() {
         );
       })
     );
+    Object.values(modelMappings).forEach((modelName) => {
+      deleteAllDocuments(modelName);
+    });
     return NextResponse.json({ message: "Tables cleared successfully" });
   } catch (err) {
     reportError({

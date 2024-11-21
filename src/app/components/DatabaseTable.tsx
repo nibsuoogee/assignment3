@@ -9,7 +9,7 @@ interface TableProps {
 const DatabaseTable: React.FC<TableProps> = ({ dataWindow }) => {
   const rows = dataWindow.rows;
   // Get the keys from the first object in the array to use as the header
-  const headers = rows?.length > 0 ? Object.keys(rows[0]) : [];
+  const headers = rows.length > 0 ? Object.keys(rows[0]) : [];
 
   return (
     <Sheet sx={{ height: 300, overflow: "auto" }}>

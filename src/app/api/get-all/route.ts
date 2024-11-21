@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getErrorMessage, reportError } from "../../../utility/errorUtils";
 import { getAllDB } from "../../../database/database";
-import { findAllDocuments } from "../../../database/databaseMongo";
-import { ModelsDictionary } from "../../../types";
-import { createUserArrays } from "../../../database/dataConversion";
+import {
+  findAllDocuments,
+  modelMappings,
+} from "../../../database/databaseMongo";
+import {
+  createAchievementObjectsFromMongo,
+  createInventoryObjectsFromMongo,
+  createSkillObjectsFromMongo,
+  createUserObjectsFromMongo,
+} from "../../../database/dataConversion";
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,25 +30,35 @@ export async function POST(request: NextRequest) {
     switch (databaseName) {
       case "mongo":
         let mongoResult = [];
-        const modelMappings: { [key: string]: keyof ModelsDictionary } = {
-          users: "userModel",
-          inventories: "inventoryModel",
-          skills: "skillModel",
-          achievements: "achievementModel",
-        };
+
         if (tableName in modelMappings) {
           mongoResult = await findAllDocuments(
             modelMappings[tableName as keyof typeof modelMappings]
           );
-          data = createUserArrays(mongoResult);
+          switch (tableName) {
+            case "users":
+              data = createUserObjectsFromMongo(mongoResult);
+              break;
+            case "inventories":
+              data = createInventoryObjectsFromMongo(mongoResult);
+              break;
+            case "skills":
+              data = createSkillObjectsFromMongo(mongoResult);
+              break;
+            case "achievements":
+              data = createAchievementObjectsFromMongo(mongoResult);
+              break;
+            default:
+              break;
+          }
           console.log(data);
         } else {
           throw new Error(`Invalid table name: ${tableName}`);
         }
         break;
       default:
-        console.log(data);
         data = await getAllDB(tableName, databaseName as string);
+        console.log(data);
         break;
     }
 

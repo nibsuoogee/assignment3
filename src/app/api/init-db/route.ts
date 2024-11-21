@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initDB } from "../../../database/database";
 import { getErrorMessage } from "../../../utility/errorUtils";
+import { dropCollections } from "../../../database/databaseMongo";
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,6 +9,7 @@ export async function POST(request: NextRequest) {
     const databaseName = searchParams.get("databaseName");
 
     await initDB(databaseName as string);
+    dropCollections();
     return NextResponse.json({ message: "Database initialized successfully" });
   } catch (err) {
     reportError({

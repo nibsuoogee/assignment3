@@ -20,6 +20,13 @@ const models: ModelsDictionary = {
   achievementModel,
 };
 
+export const modelMappings: { [key: string]: keyof ModelsDictionary } = {
+  users: "userModel",
+  inventories: "inventoryModel",
+  skills: "skillModel",
+  achievements: "achievementModel",
+};
+
 export async function findAllDocuments(modelName: keyof ModelsDictionary) {
   const model = models[modelName];
 
@@ -36,9 +43,11 @@ export async function addDataToModel(
   data: any[]
 ) {
   const model = models[modelName];
+  const filterKey =
+    modelName === ("skillModel" as keyof ModelsDictionary) ? "name" : "id";
   const operations = data.map((item) => ({
     updateOne: {
-      filter: { id: item.id },
+      filter: { [filterKey]: item[filterKey] },
       update: { $set: item },
       upsert: true,
     },
@@ -48,5 +57,26 @@ export async function addDataToModel(
     await model.bulkWrite(operations);
   } catch (error) {
     throw new Error(`Failed to insert data: ${error}`);
+  }
+}
+
+export async function deleteAllDocuments(modelName: keyof ModelsDictionary) {
+  try {
+    const model = models[modelName];
+    await model.deleteMany({});
+  } catch (error) {
+    throw new Error(`Failed to delete data: ${error}`);
+  }
+}
+
+export async function dropCollections() {
+  try {
+    await Promise.all(
+      Object.values(models).map(async (model) => {
+        await model.collection.drop();
+      })
+    );
+  } catch (error) {
+    throw new Error(`Failed to drop collections: ${error}`);
   }
 }

@@ -11,8 +11,8 @@ export interface SkillDocument extends Document {
 
 // Define the Skill schema
 export const skillSchema = new Schema<SkillDocument>({
-  name: { type: String, required: true },
-  user_id: { type: String, required: true, unique: true, ref: "User" }, // Reference to User
+  name: { type: String, required: true, unique: true },
+  user_id: { type: String, required: true, ref: "User" }, // Reference to User
   skill1: { type: String, required: true },
   skill2: { type: String, required: true },
   skill3: { type: String, required: true },

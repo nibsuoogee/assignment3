@@ -5,27 +5,9 @@ export const createUserObjects = (
     id: row[0],
     name: row[1],
     level: row[2],
-    creationDate: new Date(row[3]),
+    creationDate: row[3],
     nationality: row[4],
   }));
-};
-
-export const createUserArrays = (
-  users: {
-    id: string;
-    name: string;
-    level: number;
-    creationDate: Date;
-    nationality: string;
-  }[]
-) => {
-  return users.map((user) => [
-    user.id,
-    user.name,
-    user.level,
-    user.creationDate.toISOString(),
-    user.nationality,
-  ]);
 };
 
 export const createInventoryObjects = (
@@ -33,29 +15,11 @@ export const createInventoryObjects = (
 ) => {
   return inventoryData.map((row) => ({
     id: row[0],
-    userId: row[1],
+    user_id: row[1],
     slot1: row[2],
     slot2: row[3],
     slot3: row[4],
   }));
-};
-
-export const createInventoryArrays = (
-  inventories: {
-    id: number;
-    userId: string;
-    slot1: string;
-    slot2: string;
-    slot3: string;
-  }[]
-) => {
-  return inventories.map((inventory) => [
-    inventory.id,
-    inventory.userId,
-    inventory.slot1,
-    inventory.slot2,
-    inventory.slot3,
-  ]);
 };
 
 export const createSkillObjects = (
@@ -70,24 +34,6 @@ export const createSkillObjects = (
   }));
 };
 
-export const createSkillArrays = (
-  skills: {
-    name: string;
-    userId: string;
-    skill1: string;
-    skill2: string;
-    skill3: string;
-  }[]
-) => {
-  return skills.map((skill) => [
-    skill.name,
-    skill.userId,
-    skill.skill1,
-    skill.skill2,
-    skill.skill3,
-  ]);
-};
-
 export const createAchievementObjects = (
   achievementData: [string, string, string, number, string][]
 ) => {
@@ -96,24 +42,42 @@ export const createAchievementObjects = (
     userId: row[1],
     name: row[2],
     experience: row[3],
-    dateCompleted: new Date(row[4]),
+    dateCompleted: row[4],
   }));
 };
 
-export const createAchievementArrays = (
-  achievements: {
-    id: string;
-    userId: string;
-    name: string;
-    experience: number;
-    dateCompleted: Date;
-  }[]
-) => {
-  return achievements.map((achievement) => [
-    achievement.id,
-    achievement.userId,
-    achievement.name,
-    achievement.experience,
-    achievement.dateCompleted.toISOString(),
-  ]);
-};
+export const createUserObjectsFromMongo = (userDocs: any[]) =>
+  userDocs.map((userDoc) => ({
+    id: userDoc.id,
+    name: userDoc.name,
+    level: userDoc.level,
+    creationDate: userDoc.creationDate,
+    nationality: userDoc.nationality,
+  }));
+
+export const createInventoryObjectsFromMongo = (inventoryDocs: any[]) =>
+  inventoryDocs.map((inventoryDoc) => ({
+    id: inventoryDoc.id,
+    user_id: inventoryDoc.user_id,
+    slot1: inventoryDoc.slot1,
+    slot2: inventoryDoc.slot2,
+    slot3: inventoryDoc.slot3,
+  }));
+
+export const createSkillObjectsFromMongo = (skillDocs: any[]) =>
+  skillDocs.map((skillDoc) => ({
+    name: skillDoc.name,
+    userId: skillDoc.userId,
+    skill1: skillDoc.skill1,
+    skill2: skillDoc.skill2,
+    skill3: skillDoc.skill3,
+  }));
+
+export const createAchievementObjectsFromMongo = (achievementDocs: any[]) =>
+  achievementDocs.map((achievementDoc) => ({
+    id: achievementDoc.id,
+    user_id: achievementDoc.user_id,
+    name: achievementDoc.name,
+    experience: achievementDoc.experience,
+    dateCompleted: achievementDoc.dateCompleted,
+  }));

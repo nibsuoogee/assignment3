@@ -6,7 +6,7 @@ export interface AchievementDocument extends Document {
   user_id: string;
   name: string;
   experience: number;
-  dateCompleted: Date;
+  dateCompleted: string;
 }
 
 // Define the Achievement schema
@@ -15,7 +15,7 @@ export const achievementSchema = new Schema<AchievementDocument>({
   user_id: { type: String, required: true, ref: "User" }, // Reference to User
   name: { type: String, required: true },
   experience: { type: Number, required: true },
-  dateCompleted: { type: Date, required: true },
+  dateCompleted: { type: String, required: true },
 });
 
 // Export the Achievement model

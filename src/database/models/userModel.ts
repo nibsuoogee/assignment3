@@ -5,7 +5,7 @@ export interface UserDocument extends Document {
   id: string;
   name: string;
   level: number;
-  creationDate: Date;
+  creationDate: string;
   nationality: string;
 }
 
@@ -14,7 +14,7 @@ export const userSchema = new Schema<UserDocument>({
   id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   level: { type: Number, required: true },
-  creationDate: { type: Date, required: true },
+  creationDate: { type: String, required: true },
   nationality: { type: String, required: true },
 });
 
