@@ -9,7 +9,7 @@ import { getErrorMessage } from "../../utility/errorUtils";
 import DatabaseGetterWindow from "./DatabaseGetterWindow";
 import { useDataContext } from "../contexts/DataContext";
 
-const databases = ["europe", "north-america", "asia"];
+const databases = ["europe", "north-america", "asia", "sqlite"];
 
 export default function DatabasePanel() {
   const { showSnackbar } = useSnackbar();
@@ -163,6 +163,10 @@ export default function DatabasePanel() {
                   databaseName="mongo"
                   variant="soft"
                   color="success"
+                />
+                <DatabaseGetterWindow
+                  databaseName="sqlite-mongo"
+                  variant="outlined"
                 />
               </>
             ) : (

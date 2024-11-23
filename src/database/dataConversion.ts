@@ -27,7 +27,7 @@ export const createSkillObjects = (
 ) => {
   return skillData.map((row) => ({
     name: row[0],
-    userId: row[1],
+    user_id: row[1],
     skill1: row[2],
     skill2: row[3],
     skill3: row[4],
@@ -39,7 +39,7 @@ export const createAchievementObjects = (
 ) => {
   return achievementData.map((row) => ({
     id: row[0],
-    userId: row[1],
+    user_id: row[1],
     name: row[2],
     experience: row[3],
     dateCompleted: row[4],
@@ -67,7 +67,7 @@ export const createInventoryObjectsFromMongo = (inventoryDocs: any[]) =>
 export const createSkillObjectsFromMongo = (skillDocs: any[]) =>
   skillDocs.map((skillDoc) => ({
     name: skillDoc.name,
-    userId: skillDoc.userId,
+    user_id: skillDoc.user_id,
     skill1: skillDoc.skill1,
     skill2: skillDoc.skill2,
     skill3: skillDoc.skill3,

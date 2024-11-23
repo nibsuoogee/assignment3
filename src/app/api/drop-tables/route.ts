@@ -8,15 +8,15 @@ import {
   modelMappings,
 } from "../../../database/databaseMongo";
 
+const databases = ["europe", "north-america", "asia", "sqlite"];
+
 export async function POST() {
   try {
     const sampleData: { [key: string]: { [key: string]: TableData<string> } } =
       sampleDataOriginal;
 
-    const databaseNames = Object.keys(sampleData);
-
     await Promise.all(
-      databaseNames.map(async (databaseName) => {
+      databases.map(async (databaseName) => {
         const databaseTables = sampleData[databaseName];
         const tableNames = Object.keys(databaseTables);
 

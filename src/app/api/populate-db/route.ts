@@ -11,6 +11,44 @@ import {
   createUserObjects,
 } from "../../../database/dataConversion";
 
+async function populateDBAssignment4(
+  tableNames: string[],
+  databaseTables: {
+    [key: string]: TableData<string>;
+  },
+  databaseIndex: number
+) {
+  tableNames.map(async (tableName) => {
+    const tableData: TableData<string> = databaseTables[tableName];
+    const rows = tableData.rows;
+    if (databaseIndex == 0) {
+      let objects: any[] = [];
+      switch (tableName) {
+        case "users":
+          objects = createUserObjects(rows as any);
+          await addDataToModel("userModel", objects);
+          break;
+        case "inventories":
+          objects = createInventoryObjects(rows as any);
+          await addDataToModel("inventoryModel", objects);
+          break;
+        case "skills":
+          objects = createSkillObjects(rows as any);
+          await addDataToModel("skillModel", objects);
+          break;
+        case "achievements":
+          objects = createAchievementObjects(rows as any);
+          await addDataToModel("achievementModel", objects);
+          break;
+        default:
+          break;
+      }
+    } else if (databaseIndex == 1) {
+      await addRowsDB(tableData.columnNames, rows, tableName, "sqlite");
+    }
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -48,32 +86,8 @@ export async function POST(request: NextRequest) {
             );
           });
         }
-        tableNames.map(async (tableName) => {
-          const tableData: TableData<string> = databaseTables[tableName];
-          const rows = tableData.rows;
 
-          let objects: any[] = [];
-          switch (tableName) {
-            case "users":
-              objects = createUserObjects(rows as any);
-              await addDataToModel("userModel", objects);
-              break;
-            case "inventories":
-              objects = createInventoryObjects(rows as any);
-              await addDataToModel("inventoryModel", objects);
-              break;
-            case "skills":
-              objects = createSkillObjects(rows as any);
-              await addDataToModel("skillModel", objects);
-              break;
-            case "achievements":
-              objects = createAchievementObjects(rows as any);
-              await addDataToModel("achievementModel", objects);
-              break;
-            default:
-              break;
-          }
-        });
+        populateDBAssignment4(tableNames, databaseTables, index);
       })
     );
 

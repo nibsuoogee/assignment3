@@ -12,6 +12,34 @@ import {
   createUserObjectsFromMongo,
 } from "../../../database/dataConversion";
 
+async function getDataUsingTableName(data: any[], tableName: string) {
+  let mongoResult: any[] = [];
+  if (tableName in modelMappings) {
+    mongoResult = await findAllDocuments(
+      modelMappings[tableName as keyof typeof modelMappings]
+    );
+    switch (tableName) {
+      case "users":
+        data = createUserObjectsFromMongo(mongoResult);
+        break;
+      case "inventories":
+        data = createInventoryObjectsFromMongo(mongoResult);
+        break;
+      case "skills":
+        data = createSkillObjectsFromMongo(mongoResult);
+        break;
+      case "achievements":
+        data = createAchievementObjectsFromMongo(mongoResult);
+        break;
+      default:
+        break;
+    }
+  } else {
+    throw new Error(`Invalid table name: ${tableName}`);
+  }
+  return data;
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Get the table name from the query parameters
@@ -26,39 +54,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let data: any = null;
+    let data: any[] = [];
     switch (databaseName) {
       case "mongo":
-        let mongoResult = [];
-
-        if (tableName in modelMappings) {
-          mongoResult = await findAllDocuments(
-            modelMappings[tableName as keyof typeof modelMappings]
-          );
-          switch (tableName) {
-            case "users":
-              data = createUserObjectsFromMongo(mongoResult);
-              break;
-            case "inventories":
-              data = createInventoryObjectsFromMongo(mongoResult);
-              break;
-            case "skills":
-              data = createSkillObjectsFromMongo(mongoResult);
-              break;
-            case "achievements":
-              data = createAchievementObjectsFromMongo(mongoResult);
-              break;
-            default:
-              break;
-          }
-          console.log(data);
-        } else {
-          throw new Error(`Invalid table name: ${tableName}`);
-        }
+        data = await getDataUsingTableName(data, tableName);
+        break;
+      case "sqlite-mongo":
+        data = await getAllDB(tableName, "sqlite");
+        data = data.concat(await getDataUsingTableName(data, tableName));
         break;
       default:
         data = await getAllDB(tableName, databaseName as string);
-        console.log(data);
         break;
     }
 
