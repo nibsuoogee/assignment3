@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
 
     await addRowsAnyDB(columnNames, [row], tableName, databaseName);
 
-    let data = await getData(databaseName as string, tableName as string);
+    const data = await getData(databaseName as string, tableName as string);
 
     return NextResponse.json({ message: "Rows added successfully", data });
   } catch (err) {

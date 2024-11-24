@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let data = await getData(databaseName as string, tableName as string);
+    const data = await getData(databaseName as string, tableName as string);
 
     return NextResponse.json({ message: "Data retrieved successfully", data });
   } catch (err) {

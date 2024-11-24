@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initDB } from "../../../database/database";
-import { getErrorMessage } from "../../../utility/errorUtils";
+import { getErrorMessage, reportError } from "../../../utility/errorUtils";
 import { dropCollections } from "../../../database/databaseMongo";
 
 export async function POST(request: NextRequest) {
