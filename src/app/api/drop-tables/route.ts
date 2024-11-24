@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import { getErrorMessage, reportError } from "../../../utility/errorUtils";
-import sampleDataOriginal from "../../../database/sampleData.json";
-import { TableData } from "../../../types";
 import { dropTableDB } from "../../../database/database";
 import {
   deleteAllDocuments,
@@ -9,17 +7,12 @@ import {
 } from "../../../database/databaseMongo";
 
 const databases = ["europe", "north-america", "asia", "sqlite"];
+const tableNames = ["users", "inventories", "skills", "achievements"];
 
 export async function POST() {
   try {
-    const sampleData: { [key: string]: { [key: string]: TableData<string> } } =
-      sampleDataOriginal;
-
     await Promise.all(
       databases.map(async (databaseName) => {
-        const databaseTables = sampleData[databaseName];
-        const tableNames = Object.keys(databaseTables);
-
         await Promise.all(
           tableNames.map(async (name) => {
             await dropTableDB(name, databaseName);

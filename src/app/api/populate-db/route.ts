@@ -11,6 +11,39 @@ import {
   createUserObjects,
 } from "../../../database/dataConversion";
 
+export async function addRowsAnyDB(
+  columnNames: string[],
+  rows: any[],
+  tableName: string,
+  databaseName: string
+) {
+  let objects: any[] = [];
+  if (databaseName === "mongo") {
+    switch (tableName) {
+      case "users":
+        objects = createUserObjects(rows as any);
+        await addDataToModel("userModel", objects);
+        break;
+      case "inventories":
+        objects = createInventoryObjects(rows as any);
+        await addDataToModel("inventoryModel", objects);
+        break;
+      case "skills":
+        objects = createSkillObjects(rows as any);
+        await addDataToModel("skillModel", objects);
+        break;
+      case "achievements":
+        objects = createAchievementObjects(rows as any);
+        await addDataToModel("achievementModel", objects);
+        break;
+      default:
+        break;
+    }
+  } else {
+    await addRowsDB(columnNames, rows, tableName, databaseName);
+  }
+}
+
 async function populateDBAssignment4(
   tableNames: string[],
   databaseTables: {
@@ -22,27 +55,7 @@ async function populateDBAssignment4(
     const tableData: TableData<string> = databaseTables[tableName];
     const rows = tableData.rows;
     if (databaseIndex == 0) {
-      let objects: any[] = [];
-      switch (tableName) {
-        case "users":
-          objects = createUserObjects(rows as any);
-          await addDataToModel("userModel", objects);
-          break;
-        case "inventories":
-          objects = createInventoryObjects(rows as any);
-          await addDataToModel("inventoryModel", objects);
-          break;
-        case "skills":
-          objects = createSkillObjects(rows as any);
-          await addDataToModel("skillModel", objects);
-          break;
-        case "achievements":
-          objects = createAchievementObjects(rows as any);
-          await addDataToModel("achievementModel", objects);
-          break;
-        default:
-          break;
-      }
+      addRowsAnyDB(tableData.columnNames, rows, tableName, "mongo");
     } else if (databaseIndex == 1) {
       await addRowsDB(tableData.columnNames, rows, tableName, "sqlite");
     }

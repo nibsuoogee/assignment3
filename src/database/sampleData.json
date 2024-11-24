@@ -27,7 +27,7 @@
       ]
     },
     "skills": {
-      "columnNames": ["name", "user_id", "skill1", "skill2", "skill3"],
+      "columnNames": ["id", "user_id", "skill1", "skill2", "skill3"],
       "rows": [
         [
           "Warrior Skills",
@@ -95,7 +95,7 @@
       ]
     },
     "skills": {
-      "columnNames": ["name", "user_id", "skill1", "skill2", "skill3"],
+      "columnNames": ["id", "user_id", "skill1", "skill2", "skill3"],
       "rows": [
         ["Knight Skills", "userA", "Heavy Strike", "Shield Bash", "Fortitude"],
         ["Wizard Skills", "userB", "Fireball", "Ice Shield", "Mana Burst"],
@@ -139,7 +139,7 @@
       ]
     },
     "skills": {
-      "columnNames": ["name", "user_id", "skill1", "skill2", "skill3"],
+      "columnNames": ["id", "user_id", "skill1", "skill2", "skill3"],
       "rows": [
         [
           "Samurai Skills",

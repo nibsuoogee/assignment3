@@ -104,8 +104,8 @@ export async function initDB(databaseName: string): Promise<string> {
           ON DELETE CASCADE ON UPDATE NO ACTION
     );`,
       `CREATE TABLE IF NOT EXISTS skills (
-        name TEXT,
-        user_id TEXT PRIMARY KEY,
+        id TEXT PRIMARY KEY,
+        user_id TEXT,
         skill1 TEXT,
         skill2 TEXT,
         skill3 TEXT,
@@ -168,15 +168,24 @@ export async function addRowsDB(
       // for the query
       const placeholders = columnNames.map(() => "?").join(",");
 
+      // Generate the conflict resolution clause
+      const updateSetClause = columnNames
+        .map((col) => `${col} = excluded.${col}`)
+        .join(", ");
+
       const result = await new Promise((resolve, reject) => {
         db.serialize(() => {
           rows.forEach((row) => {
             db.run(
-              `INSERT INTO ${table}(${columnNamesJoined}) VALUES(${placeholders})`,
+              `INSERT INTO ${table} (${columnNamesJoined}) 
+               VALUES (${placeholders}) 
+               ON CONFLICT(id) DO UPDATE SET ${updateSetClause};`,
               row,
               (err) => {
                 if (err) {
                   reject(err);
+                } else {
+                  resolve(`Row added successfully`);
                 }
               }
             );

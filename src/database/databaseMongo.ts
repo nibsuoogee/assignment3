@@ -43,8 +43,7 @@ export async function addDataToModel(
   data: any[]
 ) {
   const model = models[modelName];
-  const filterKey =
-    modelName === ("skillModel" as keyof ModelsDictionary) ? "name" : "id";
+  const filterKey = "id";
   const operations = data.map((item) => ({
     updateOne: {
       filter: { [filterKey]: item[filterKey] },

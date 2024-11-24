@@ -26,7 +26,7 @@ export const createSkillObjects = (
   skillData: [string, string, string, string, string][]
 ) => {
   return skillData.map((row) => ({
-    name: row[0],
+    id: row[0],
     user_id: row[1],
     skill1: row[2],
     skill2: row[3],
@@ -66,7 +66,7 @@ export const createInventoryObjectsFromMongo = (inventoryDocs: any[]) =>
 
 export const createSkillObjectsFromMongo = (skillDocs: any[]) =>
   skillDocs.map((skillDoc) => ({
-    name: skillDoc.name,
+    id: skillDoc.id,
     user_id: skillDoc.user_id,
     skill1: skillDoc.skill1,
     skill2: skillDoc.skill2,

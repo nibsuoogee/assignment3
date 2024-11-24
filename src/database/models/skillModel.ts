@@ -2,7 +2,7 @@ import { Schema, Document, model, models } from "mongoose";
 
 // Define the Skill document interface
 export interface SkillDocument extends Document {
-  name: string;
+  id: string;
   user_id: string;
   skill1: string;
   skill2: string;
@@ -11,7 +11,7 @@ export interface SkillDocument extends Document {
 
 // Define the Skill schema
 export const skillSchema = new Schema<SkillDocument>({
-  name: { type: String, required: true, unique: true },
+  id: { type: String, required: true, unique: true },
   user_id: { type: String, required: true, ref: "User" }, // Reference to User
   skill1: { type: String, required: true },
   skill2: { type: String, required: true },

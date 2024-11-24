@@ -5,6 +5,7 @@ import {
   deleteFromModelById,
   modelMappings,
 } from "../../../database/databaseMongo";
+import { getData } from "../get-all/route";
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,13 +25,15 @@ export async function POST(request: NextRequest) {
         break;
     }
 
-    return NextResponse.json({ message: "Tables cleared successfully" });
+    let data = await getData(databaseName as string, tableName as string);
+
+    return NextResponse.json({ message: "Row deleted successfully", data });
   } catch (err) {
     reportError({
-      message: "Error dropping tables:" + getErrorMessage(err),
+      message: "Error deleting row:" + getErrorMessage(err),
     });
     return NextResponse.json(
-      { message: "Error dropping tables" },
+      { message: "Error deleting row" },
       { status: 500 }
     );
   }

@@ -12,7 +12,8 @@ import {
   createUserObjectsFromMongo,
 } from "../../../database/dataConversion";
 
-async function getDataUsingTableName(data: any[], tableName: string) {
+async function getDataUsingTableName(tableName: string) {
+  let data: any[] = [];
   let mongoResult: any[] = [];
   if (tableName in modelMappings) {
     mongoResult = await findAllDocuments(
@@ -40,6 +41,23 @@ async function getDataUsingTableName(data: any[], tableName: string) {
   return data;
 }
 
+export async function getData(databaseName: string, tableName: string) {
+  let data: any[] = [];
+  switch (databaseName) {
+    case "mongo":
+      data = await getDataUsingTableName(tableName);
+      break;
+    case "sqlite-mongo":
+      data = await getAllDB(tableName, "sqlite");
+      data = data.concat(await getDataUsingTableName(tableName));
+      break;
+    default:
+      data = await getAllDB(tableName, databaseName as string);
+      break;
+  }
+  return data;
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Get the table name from the query parameters
@@ -54,19 +72,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let data: any[] = [];
-    switch (databaseName) {
-      case "mongo":
-        data = await getDataUsingTableName(data, tableName);
-        break;
-      case "sqlite-mongo":
-        data = await getAllDB(tableName, "sqlite");
-        data = data.concat(await getDataUsingTableName(data, tableName));
-        break;
-      default:
-        data = await getAllDB(tableName, databaseName as string);
-        break;
-    }
+    let data = await getData(databaseName as string, tableName as string);
 
     return NextResponse.json({ message: "Data retrieved successfully", data });
   } catch (err) {
