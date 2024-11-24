@@ -30,7 +30,8 @@ export default function DatabaseGetterWindow({
 
       if (response.ok) {
         const dataWindow: DataWindowType = {
-          title: databaseName + " " + tableName,
+          databaseName: databaseName,
+          tableName: tableName,
           rows: data.data,
         };
         setDataRows(dataWindow);

@@ -6,7 +6,8 @@ export type TableData<T> = {
 };
 
 export type DataWindowType = {
-  title: string;
+  databaseName: string;
+  tableName: string;
   rows: Array<Record<string, any>>;
 };
 

@@ -40,7 +40,7 @@ export default function DatabaseResults() {
                       level="body-sm"
                       sx={{ textAlign: "center", mb: 2 }}
                     >
-                      {dataRow.title}
+                      {dataRow.databaseName + " " + dataRow.tableName}
                     </Typography>
                     <DatabaseTable dataWindow={dataRow} />
                   </Card>

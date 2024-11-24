@@ -80,3 +80,16 @@ export async function dropCollections() {
     throw new Error(`Failed to drop collections: ${error}`);
   }
 }
+
+export async function deleteFromModelById(
+  modelName: keyof ModelsDictionary,
+  id: string
+) {
+  const model = models[modelName];
+  try {
+    await model.deleteOne({ id });
+  } catch (error) {
+    throw new Error(`Failed to delete data: ${error}`);
+  }
+  return true;
+}

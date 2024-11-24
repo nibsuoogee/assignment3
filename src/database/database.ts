@@ -193,6 +193,41 @@ export async function addRowsDB(
   }, databaseName);
 }
 
+export async function deleteRowsDB(
+  ids: string[],
+  table: string,
+  databaseName: string
+): Promise<string> {
+  return _execOperationDB(async (db: sqlite3.Database) => {
+    try {
+      const placeholders = ids.map(() => "?").join(",");
+
+      const result = await new Promise((resolve, reject) => {
+        db.serialize(() => {
+          db.run(
+            `DELETE FROM ${table} WHERE id IN (${placeholders})`,
+            ids,
+            (err) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(`Deleted rows from ${table}`);
+              }
+            }
+          );
+        });
+      });
+
+      return result;
+    } catch (err) {
+      reportError({
+        message: "Error in deleteRowsDB():" + getErrorMessage(err),
+      });
+      throw err;
+    }
+  }, databaseName);
+}
+
 export async function dropTableDB(tableName: string, databaseName: string) {
   return _execOperationDB(async (db: sqlite3.Database) => {
     try {
